@@ -10,13 +10,16 @@ type Client struct {
 }
 
 func NewClient(apiKey string) *Client {
-	return apiKey
+	return &Client{apiKey}
 }
 
 const defaultBaseUrl = "https://dns.beta.gandi.net/api/v5/"
 
-func (c Client) request(method string, urlPart string, body io.Reader) *http.Request {
-	req := http.NewRequest(method, defaultBaseUrl+urlPart, body)
+func (c Client) request(method string, urlPart string, body io.Reader) (*http.Request, error) {
+	req, err := http.NewRequest(method, defaultBaseUrl+urlPart, body)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Add("X-Api-Key", c.apiKey)
-	return req
+	return req, nil
 }
