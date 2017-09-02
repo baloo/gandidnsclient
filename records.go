@@ -81,6 +81,7 @@ func (c Client) ListRecords(zoneID string) ([]ZoneRecord, error) {
 	if err != nil {
 		return nil, err
 	}
+	c.log("List records for %s", zoneID)
 	cli := &http.Client{}
 	resp, err := cli.Do(req)
 	if err != nil {
@@ -90,10 +91,12 @@ func (c Client) ListRecords(zoneID string) ([]ZoneRecord, error) {
 	if err != nil {
 		return nil, err
 	}
+	c.log("List records for %s (Body:%+v)", zoneID, body)
 	records := make([]ZoneRecord, 0)
 	if err = json.Unmarshal(body, &records); err != nil {
 		return nil, err
 	}
+	c.log("Records found for %s (Records:%+v)", zoneID, body)
 	return records, nil
 }
 
@@ -103,6 +106,7 @@ func (c Client) ListRecordsAsText(zoneID string) (string, error) {
 		return "", err
 	}
 	req.Header.Add("Accept", "text/plain")
+	c.log("List records for %s", zoneID)
 	cli := &http.Client{}
 	resp, err := cli.Do(req)
 	if err != nil {
@@ -112,6 +116,7 @@ func (c Client) ListRecordsAsText(zoneID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	c.log("List records for %s (Body:%+v)", zoneID, body)
 	return string(body), nil
 }
 
@@ -120,6 +125,7 @@ func (c Client) AddRecord(zoneID string, records []ZoneRecord) error {
 	if err != nil {
 		return err
 	}
+	c.log("Inserting into %s: %+v", zoneID, records)
 	req, err := c.request("POST", defaultBaseUrl+"/zones/"+zoneID+"/records", bytes.NewReader(b))
 	if err != nil {
 		return err
@@ -131,6 +137,7 @@ func (c Client) AddRecord(zoneID string, records []ZoneRecord) error {
 }
 
 func (c Client) ChangeRecord(zoneID string, record ZoneRecord) error {
+	c.log("Changing %s: %+v", zoneID, record)
 	toMarshal := Copy(record)
 	toMarshal.Type = RecordType("")
 	toMarshal.Name = ""

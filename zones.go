@@ -54,6 +54,7 @@ func (z *Zone) UnmarshalJSON(b []byte) error {
 }
 
 func (c Client) ListZones() ([]Zone, error) {
+	c.log("List zones")
 	req, err := c.request("GET", "/zone", strings.NewReader(""))
 	if err != nil {
 		return nil, err
@@ -67,9 +68,11 @@ func (c Client) ListZones() ([]Zone, error) {
 	if err != nil {
 		return nil, err
 	}
+	c.log("Received list of zones: %+v", body)
 	var zones []Zone
 	if err := json.Unmarshal(body, &zones); err != nil {
 		return nil, err
 	}
+	c.log("List of zones: %+v", zones)
 	return zones, nil
 }
